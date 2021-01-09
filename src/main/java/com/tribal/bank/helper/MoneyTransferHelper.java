@@ -4,6 +4,12 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 
+ * Creates various remarks that are to be posted with the transactions on the ledger, for user to identify transactions from the 
+ * account statement
+ *
+ */
 public class MoneyTransferHelper {
 	private static SecureRandom random = new SecureRandom();
 

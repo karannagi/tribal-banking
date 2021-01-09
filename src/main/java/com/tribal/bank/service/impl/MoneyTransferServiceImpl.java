@@ -30,14 +30,21 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 	private final AccountingService accountingService;
 	private final TransactionLogService transactionLogService;
 
-
+	/**
+	 * Entry point of money transfer service,it checks for customer validity and account and customer combination, creates reference 
+	 * number to be used for transaction and logs the final transaction log
+	 *  
+	 */
 	@Override
 	@Transactional(rollbackFor =TribalBankingException.class,propagation = Propagation.REQUIRED)
+
 	public  MoneyTransferResponseDTO moneyTransfer(String userName, MoneyTransferRequestDTO moneyTransferRequest) throws TribalBankingException {
 		final Customer customer = customerRepository.findByUserName(userName).orElseThrow(()->new TribalBankingException(MoneyTransferErrorCodes.CUSTOMER_NOT_FOUND));
+		//check if account belongs to user
 		CustomerValidationHelper.accountBelongsToUser(customer, moneyTransferRequest.getAccountFrom());
 		log.info("Loaded customer for the principal {}",userName);
 		final String referenceNumber = MoneyTransferHelper.generateReferenceNumber();
+		//generate the reference number to be used for this transaction
 		log.info("Reference number for this request is: {}",referenceNumber);
 		try {
 			performMoneyTransfer(moneyTransferRequest,referenceNumber);
@@ -56,17 +63,26 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 
 		return MoneyTransferResponseDTO.builder().referenceNumber(referenceNumber).build();
 	}
+
+	/**
+	 * This method performs the debit and credit transaction for the accounts and also does the reversal in case the credit trxn
+	 * fails
+	 * @param moneyTransferRequest
+	 * @param referenceNumber
+	 * @throws TribalBankingException
+	 */
 	private void performMoneyTransfer(MoneyTransferRequestDTO moneyTransferRequest,String referenceNumber) throws TribalBankingException {
 
-		
+		// Perform the debit transaction first so that we can lock the funds to be deposited into the receiver's account
 		accountingService.debitAccount(moneyTransferRequest.getAccountFrom(), moneyTransferRequest.getAmount(), 
 				MoneyTransferHelper.createDebitRemarks(moneyTransferRequest.getAccountFrom(), moneyTransferRequest.getAccountTo()),referenceNumber);
 		log.info("Debit transaction is successful for ref no {}",referenceNumber);
 
 		try{
-		accountingService.creditAccount(moneyTransferRequest.getAccountTo(), moneyTransferRequest.getAmount(),
-				MoneyTransferHelper.createCreditRemarks(moneyTransferRequest.getAccountFrom(), moneyTransferRequest.getAccountTo()),referenceNumber);
-		log.info("Credit transaction is successful for ref no {}",referenceNumber);
+			// perform the credit transaction in try catch, so that in case of exception the reversal can be done
+			accountingService.creditAccount(moneyTransferRequest.getAccountTo(), moneyTransferRequest.getAmount(),
+					MoneyTransferHelper.createCreditRemarks(moneyTransferRequest.getAccountFrom(), moneyTransferRequest.getAccountTo()),referenceNumber);
+			log.info("Credit transaction is successful for ref no {}",referenceNumber);
 		}
 		catch(TribalBankingException e) {
 			log.info("Credit transaction is not successful for ref no {} initiating reverse transfer",referenceNumber);

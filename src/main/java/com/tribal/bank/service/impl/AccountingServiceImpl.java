@@ -27,6 +27,9 @@ public class AccountingServiceImpl implements AccountingService {
 	private final LedgerEntryService transactionLogService;
 	private final AccountRepository accountRepository;
 
+	/*
+	 * Performs the credit transaction while checking for overdraft and pessimistic write lock
+	 * */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public AccountingServiceResponse creditAccount(final String accountNumber, final BigDecimal amount,final String remarks,String referenceNumber) throws TribalBankingException {
@@ -42,7 +45,9 @@ public class AccountingServiceImpl implements AccountingService {
 		transactionLogService.logLedgerEntry(account.getAccountNumber(), amount, remarks,referenceNumber);
 		return AccountingServiceResponse.builder().build();
 	}
-
+	/*
+	 * Performs the debit transaction while checking for overdraft and pessimistic write lock
+	 * */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public AccountingServiceResponse debitAccount(final String accountNumber, final BigDecimal amount,final String remarks,String referenceNumber) throws TribalBankingException {

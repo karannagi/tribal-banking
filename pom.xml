@@ -123,12 +123,13 @@
 				<version>0.8.5</version>
 				<configuration>
 					<excludes>
-						<exclude>**Application**</exclude>
+						<exclude>**TribalBankingServiceApplication.java**</exclude>
 						<exclude>**/constants/**</exclude>
 						<exclude>**/entity/**</exclude>
 						<exclude>**/repo/**</exclude>
 						<exclude>**/dto/**</exclude>
 						<exclude>**/model/**</exclude>
+						<exclude>**/config/**</exclude>
 						<exclude>**/exception/**</exclude>
 					</excludes>
 				</configuration>

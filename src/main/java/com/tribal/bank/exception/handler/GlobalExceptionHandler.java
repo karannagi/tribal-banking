@@ -13,6 +13,10 @@ import com.tribal.bank.response.dto.ErrorResponseDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
+
+/**
+ *Global exception handler, the exceptions thrown are caught, logged and then returned to the user in ErrorResponseDTO
+ */
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

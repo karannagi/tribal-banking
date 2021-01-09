@@ -22,14 +22,19 @@ public class AccountServiceImpl implements AccountService {
 	private final CustomerRepository customerRepository;
 	private final AccountRepository accountRepository;
 	
+	/**
+	 * Get the account details while validating the request.
+	 */
 	@Override
 	public AccountDetailsDTO accountDetails(final String userName, final String accountNumber) throws TribalBankingException {
 		final Customer customer = customerRepository.findByUserName(userName).orElseThrow(()->new TribalBankingException(MoneyTransferErrorCodes.CUSTOMER_NOT_FOUND));
 		log.info("Loaded customer for the principal {}",userName);
+		//check if account belongs to user, so user cannot see details of other's account
 		CustomerValidationHelper.accountBelongsToUser(customer, accountNumber);
 		final Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(()->
 		new TribalBankingException(MoneyTransferErrorCodes.ACCOUNT_IS_NOT_FOUND));
 		log.info("Loaded account for the principal {}",userName);
+		//check if the account number is active before sending the details back
 		CustomerValidationHelper.checkIfAccountIsActive(account,null);
 		return AccountDetailsDTO.builder().balance(account.getBalance())
 				.accountType(account.getAccountTypeId().getAccountName())
