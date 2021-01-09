@@ -1,0 +1,13 @@
+insert into segment values (1,'CONVENTIONAL');
+insert into account_type values(1,'SAVINGS',CURRENT_TIMESTAMP(),1.25,0.0,CURRENT_TIMESTAMP());
+insert into branch values(1,CURRENT_TIMESTAMP(),'Down Town','TRIBAL_HO','TBLXXX',CURRENT_TIMESTAMP());
+insert into customer values (1,TRUE,CURRENT_TIMESTAMP(),'karan.nagi@gmail.com','Karan','Nagi','971555727740','$2y$12$jfisVu8OQWPLaywHTQ3LEeK26JS0sWj1oHT9B.95EUiX3N2lXO5m6',CURRENT_TIMESTAMP(),'karannagi',1);
+insert into customer values (2,TRUE,CURRENT_TIMESTAMP(),'sandra@gmail.com','Sandra','Rozario','971555727741','',CURRENT_TIMESTAMP(),'srozario',1);
+insert into account values(1,TRUE,500.00,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'001203001',1,1);
+insert into account values(2,TRUE,500.00,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'001203002',1,1);
+insert into account values(3,TRUE,500.00,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'001203003',1,1);
+insert into account values(4,TRUE,0.0,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'001203004',1,1);
+insert into customer_accounts values(1,1);
+insert into customer_accounts values(1,2);
+insert into customer_accounts values(2,3);
+insert into customer_accounts values(2,4);
